@@ -16,7 +16,7 @@ bool IsRetryableStatus(NYdb::EStatus status);
 
 NYdb::NRetry::TRetryOperationSettings PrepareRetrySettings(const OperationSettings& settings, bool is_retryable);
 
-inline NYdb::TStatus MakeNonRetryableStatus() { return NYdb::TStatus{NYdb::EStatus::BAD_REQUEST, NYql::TIssues()}; }
+inline NYdb::TStatus MakeNonRetryableStatus() { return NYdb::TStatus{NYdb::EStatus::BAD_REQUEST, NYdb::NIssue::TIssues()}; }
 
 // Func: (NYdb::NTable::TSession) -> NThreading::TFuture<T>
 //       OR

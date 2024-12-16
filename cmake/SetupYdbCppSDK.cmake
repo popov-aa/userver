@@ -32,8 +32,8 @@ endif()
 
 CPMAddPackage(
   NAME ydb-cpp-sdk
-  GIT_TAG 240e2d9
-  GITHUB_REPOSITORY ydb-platform/ydb-cpp-sdk
+  GIT_TAG credentials-login-component-fix
+  GITHUB_REPOSITORY popov-aa/ydb-cpp-sdk
   OPTIONS
   "Brotli_VERSION ${Brotli_VERSION}"
   "RAPIDJSON_INCLUDE_DIRS ${RAPIDJSON_INCLUDE_DIRS}"
