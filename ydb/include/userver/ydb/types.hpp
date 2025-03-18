@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/uuid/uuid.hpp>
 #include <chrono>
 #include <cstdint>
 #include <string>
@@ -27,7 +28,7 @@ namespace ydb {
  * Uint64        | std::uint64_t
  * Float         | N/A
  * Double        | double
- * Date          | N/A
+ * Date          | std::chrono::system_clock::time_point
  * Datetime      | N/A
  * Timestamp     | std::chrono::system_clock::time_point
  * Interval      | N/A
@@ -38,7 +39,7 @@ namespace ydb {
  * Utf8          | ydb::Utf8
  * Yson          | N/A
  * Json          | formats::json::Value
- * Uuid          | N/A
+ * Uuid          | boost::uuids::uuid
  * JsonDocument  | ydb::JsonDocument
  * DyNumber      | N/A
  *
@@ -51,6 +52,11 @@ using Utf8 = utils::StrongTypedef<Utf8Tag, std::string>;
 
 class JsonDocumentTag {};
 using JsonDocument = utils::StrongTypedef<JsonDocumentTag, formats::json::Value>;
+
+using Uuid = boost::uuids::uuid;
+
+class DateTag {};
+using Date = utils::StrongTypedef<DateTag, std::chrono::system_clock::time_point>;
 
 using InsertColumnValue = std::variant<
     std::string,

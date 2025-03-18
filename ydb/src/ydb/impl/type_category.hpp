@@ -49,6 +49,12 @@ inline constexpr auto kTypeCategory<formats::json::Value> = NYdb::EPrimitiveType
 template <>
 inline constexpr auto kTypeCategory<JsonDocument> = NYdb::EPrimitiveType::JsonDocument;
 
+template <>
+inline constexpr auto kTypeCategory<Uuid> = NYdb::EPrimitiveType::Uuid;
+
+template <>
+inline constexpr auto kTypeCategory<Date> = NYdb::EPrimitiveType::Date;
+
 }  // namespace ydb::impl
 
 USERVER_NAMESPACE_END

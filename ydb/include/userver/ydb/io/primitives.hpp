@@ -119,6 +119,20 @@ struct JsonDocumentTrait {
     static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
 };
 
+struct UuidTrait {
+    using Type = Uuid;
+    static Type Parse(const NYdb::TValueParser& value_parser);
+    template <typename Builder>
+    static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
+};
+
+struct DateTrait {
+    using Type = Date;
+    static Type Parse(const NYdb::TValueParser& value_parser);
+    template <typename Builder>
+    static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
+};
+
 template <>
 struct ValueTraits<std::optional<JsonDocumentTrait::Type>> : OptionalPrimitiveTraits<JsonDocumentTrait> {};
 
@@ -142,6 +156,18 @@ struct ValueTraits<std::optional<Utf8Trait::Type>> : OptionalPrimitiveTraits<Utf
 
 template <>
 struct ValueTraits<Utf8Trait::Type> : PrimitiveTraits<Utf8Trait> {};
+
+template <>
+struct ValueTraits<std::optional<UuidTrait::Type>> : OptionalPrimitiveTraits<UuidTrait> {};
+
+template <>
+struct ValueTraits<UuidTrait::Type> : PrimitiveTraits<UuidTrait> {};
+
+template <>
+struct ValueTraits<std::optional<DateTrait::Type>> : OptionalPrimitiveTraits<DateTrait> {};
+
+template <>
+struct ValueTraits<DateTrait::Type> : PrimitiveTraits<DateTrait> {};
 
 template <>
 struct ValueTraits<std::optional<StringTrait::Type>> : OptionalPrimitiveTraits<StringTrait> {};

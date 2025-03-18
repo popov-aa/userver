@@ -10,6 +10,12 @@
 
 #include <ydb/impl/type_category.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/string_generator.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 USERVER_NAMESPACE_BEGIN
 
 namespace ydb {
@@ -213,6 +219,46 @@ void Utf8Trait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& val
     builder.Utf8(impl::ToString(value.GetUnderlying()));
 }
 
+template struct OptionalPrimitiveTraits<UuidTrait>;
+template struct PrimitiveTraits<UuidTrait>;
+
+UuidTrait::Type UuidTrait::Parse(const NYdb::TValueParser& value_parser) {
+    const auto& value = value_parser.GetUuid();
+
+    // FIXME: Разобраться с порядком байт
+    // boost::uuids::uuid uuid{};
+    // memcpy(uuid.data, &value.Buf_.Halfs[0], sizeof(value.Buf_.Halfs[0]));
+    // memcpy(uuid.data + sizeof(value.Buf_.Halfs[0]), &value.Buf_.Halfs[1], sizeof(value.Buf_.Halfs[1]));
+    // return uuid;
+
+    boost::uuids::string_generator gen;
+    return gen(value.ToString());
+}
+
+template <typename Builder>
+void UuidTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
+    // FIXME: Разобраться с порядком байт
+    // std::uint64_t low_128{0}, high_128{0};
+    // memcpy(&low_128, value.data, sizeof(low_128));
+    // memcpy(&high_128, value.data + sizeof(low_128), sizeof(high_128));
+    // builder.Uuid(NYdb::TUuidValue(low_128, high_128));
+    builder.Uuid(NYdb::TUuidValue(boost::lexical_cast<std::string>(value)));
+}
+
+template struct OptionalPrimitiveTraits<DateTrait>;
+template struct PrimitiveTraits<DateTrait>;
+
+DateTrait::Type DateTrait::Parse(const NYdb::TValueParser& value_parser) {
+    return Date(std::chrono::microseconds(value_parser.GetDate().GetValue()));
+}
+
+template <typename Builder>
+void DateTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
+    builder.Date(TInstant::MicroSeconds(
+        std::chrono::duration_cast<std::chrono::microseconds>(value.GetUnderlying().time_since_epoch()).count()
+    ));
+}
+//
 template struct OptionalPrimitiveTraits<TimestampTrait>;
 template struct PrimitiveTraits<TimestampTrait>;
 
