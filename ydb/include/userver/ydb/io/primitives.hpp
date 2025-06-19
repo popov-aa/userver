@@ -102,6 +102,13 @@ struct Utf8Trait {
     static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
 };
 
+struct DateTrait {
+    using Type = Date;
+    static Type Parse(const NYdb::TValueParser& value_parser);
+    template <typename Builder>
+    static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
+};
+
 struct TimestampTrait {
     using Type = Timestamp;
     static Type Parse(const NYdb::TValueParser& value_parser);
@@ -141,6 +148,12 @@ struct ValueTraits<std::optional<JsonTrait::Type>> : OptionalPrimitiveTraits<Jso
 
 template <>
 struct ValueTraits<formats::json::Value> : PrimitiveTraits<JsonTrait> {};
+
+template <>
+struct ValueTraits<std::optional<DateTrait::Type>> : OptionalPrimitiveTraits<DateTrait> {};
+
+template <>
+struct ValueTraits<DateTrait::Type> : PrimitiveTraits<DateTrait> {};
 
 template <>
 struct ValueTraits<std::optional<TimestampTrait::Type>> : OptionalPrimitiveTraits<TimestampTrait> {};

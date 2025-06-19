@@ -4,6 +4,7 @@
 
 #include <boost/uuid/uuid.hpp>
 
+#include <bits/chrono.h>
 #include <ydb-cpp-sdk/client/params/params.h>
 #include <ydb-cpp-sdk/client/value/value.h>
 
@@ -13,6 +14,7 @@
 #include <userver/ydb/impl/cast.hpp>
 
 #include <ydb/impl/type_category.hpp>
+#include "userver/ydb/types.hpp"
 
 USERVER_NAMESPACE_BEGIN
 
@@ -228,6 +230,20 @@ Utf8Trait::Type Utf8Trait::Parse(const NYdb::TValueParser& value_parser) {
 template <typename Builder>
 void Utf8Trait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
     builder.Utf8(impl::ToString(value.GetUnderlying()));
+}
+
+template struct OptionalPrimitiveTraits<DateTrait>;
+template struct PrimitiveTraits<DateTrait>;
+
+DateTrait::Type DateTrait::Parse(const NYdb::TValueParser& value_parser) {
+    return Date{std::chrono::days(value_parser.GetTimestamp().GetValue())};
+}
+
+template <typename Builder>
+void DateTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
+    builder.Date(
+        TInstant::Days(std::chrono::duration_cast<std::chrono::microseconds>(value.GetUnderlying().time_since_epoch()).count())
+    );
 }
 
 template struct OptionalPrimitiveTraits<TimestampTrait>;
