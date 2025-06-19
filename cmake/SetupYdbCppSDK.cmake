@@ -43,7 +43,7 @@ cpmaddpackage(
     NAME
     ydb-cpp-sdk
     GIT_TAG
-    v3.5.1
+    v3.7.0
     GITHUB_REPOSITORY
     ydb-platform/ydb-cpp-sdk
     OPTIONS
