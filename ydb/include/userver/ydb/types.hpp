@@ -49,6 +49,9 @@ using Timestamp = std::chrono::system_clock::time_point;
 class Utf8Tag {};
 using Utf8 = utils::StrongTypedef<Utf8Tag, std::string>;
 
+class DateTag {};
+using Date = utils::StrongTypedef<DateTag, std::chrono::system_clock::time_point>;
+
 class JsonDocumentTag {};
 using JsonDocument = utils::StrongTypedef<JsonDocumentTag, formats::json::Value>;
 
