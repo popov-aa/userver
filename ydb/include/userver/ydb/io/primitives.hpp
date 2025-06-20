@@ -53,6 +53,20 @@ struct BoolTrait {
     static void Write(NYdb::TValueBuilderBase<Builder>& builder, Type value);
 };
 
+struct Int16Trait {
+    using Type = std::int16_t;
+    static Type Parse(const NYdb::TValueParser& value_parser);
+    template <typename Builder>
+    static void Write(NYdb::TValueBuilderBase<Builder>& builder, Type value);
+};
+
+struct Uint16Trait {
+    using Type = std::uint16_t;
+    static Type Parse(const NYdb::TValueParser& value_parser);
+    template <typename Builder>
+    static void Write(NYdb::TValueBuilderBase<Builder>& builder, Type value);
+};
+
 struct Int32Trait {
     using Type = std::int32_t;
     static Type Parse(const NYdb::TValueParser& value_parser);
@@ -196,6 +210,18 @@ struct ValueTraits<std::optional<Int64Trait::Type>> : OptionalPrimitiveTraits<In
 
 template <>
 struct ValueTraits<Int64Trait::Type> : PrimitiveTraits<Int64Trait> {};
+
+template <>
+struct ValueTraits<std::optional<Uint16Trait::Type>> : OptionalPrimitiveTraits<Uint16Trait> {};
+
+template <>
+struct ValueTraits<Uint16Trait::Type> : PrimitiveTraits<Uint16Trait> {};
+
+template <>
+struct ValueTraits<std::optional<Int16Trait::Type>> : OptionalPrimitiveTraits<Int16Trait> {};
+
+template <>
+struct ValueTraits<Int16Trait::Type> : PrimitiveTraits<Int16Trait> {};
 
 template <>
 struct ValueTraits<std::optional<Uint32Trait::Type>> : OptionalPrimitiveTraits<Uint32Trait> {};
