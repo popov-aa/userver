@@ -20,6 +20,7 @@ namespace ydb {
 ///
 /// https://ydb.tech/docs/en/concepts/transactions
 class Transaction final {
+    friend class TopicWriteSession;
 public:
     Transaction(Transaction&&) noexcept = default;
     Transaction(const Transaction&) = delete;

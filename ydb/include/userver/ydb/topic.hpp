@@ -13,6 +13,8 @@ USERVER_NAMESPACE_BEGIN
 
 namespace ydb {
 
+class Transaction;
+
 namespace impl {
 class Driver;
 struct TopicSettings;
@@ -63,6 +65,60 @@ private:
     std::shared_ptr<NYdb::NTopic::IReadSession> read_session_;
 };
 
+/// @brief Write session used to connect to topic for writing
+///
+/// @see https://ydb.tech/docs/en/reference/ydb-sdk/topic#writing
+///
+class TopicWriteSession final {
+public:
+    /// @cond
+    // For internal use only.
+    explicit TopicWriteSession(std::shared_ptr<NYdb::NTopic::IWriteSession> write_session);
+    /// @endcond
+
+    /// @brief Get write session events
+    ///
+    /// Waits until event occurs
+    /// @param max_events_count maximum events count in batch
+    /// if not specified, write session chooses event batch size automatically
+    std::vector<NYdb::NTopic::TWriteSessionEvent::TEvent> GetEvents(
+        std::optional<std::size_t> max_events_count = {}
+    );
+
+    //! Write single message.
+    //! continuationToken - a token earlier provided to client with ReadyToAccept event.
+    void Write(NYdb::NTopic::TContinuationToken&& continuationToken, NYdb::NTopic::TWriteMessage&& message,
+               Transaction* tx = nullptr);
+
+    //! Write single message. Old method with only basic message options.
+    void Write(NYdb::NTopic::TContinuationToken&& continuationToken, std::string_view data, std::optional<uint64_t> seqNo = std::nullopt,
+               std::optional<TInstant> createTimestamp = std::nullopt);
+
+    //! Write single message that is already coded by codec.
+    //! continuationToken - a token earlier provided to client with ReadyToAccept event.
+    void WriteEncoded(NYdb::NTopic::TContinuationToken&& continuationToken, NYdb::NTopic::TWriteMessage&& params,
+                      Transaction* tx = nullptr);
+
+    //! Write single message that is already compressed by codec. Old method with only basic message options.
+    void WriteEncoded(NYdb::NTopic::TContinuationToken&& continuationToken, std::string_view data, NYdb::NTopic::ECodec codec, uint32_t originalSize,
+                      std::optional<uint64_t> seqNo = std::nullopt, std::optional<TInstant> createTimestamp = std::nullopt);
+
+    /// @brief Close read session
+    ///
+    /// Waits for all commit acknowledgments to arrive.
+    /// Force close after timeout
+    bool Close(std::chrono::milliseconds timeout);
+
+    /// Get native write session
+    /// @warning Use with care! Facilities from
+    /// `<core/include/userver/drivers/subscribable_futures.hpp>` can help with
+    /// non-blocking wait operations.
+    std::shared_ptr<NYdb::NTopic::IWriteSession> GetNativeTopicWriteSession();
+
+private:
+    std::shared_ptr<NYdb::NTopic::IWriteSession> write_session_;
+};
+
 /// @ingroup userver_clients
 ///
 /// @brief YDB Topic Client
@@ -85,6 +141,9 @@ public:
 
     /// Create read session
     TopicReadSession CreateReadSession(const NYdb::NTopic::TReadSessionSettings& settings);
+
+    /// Create write session
+    TopicWriteSession CreateWriteSession(const NYdb::NTopic::TWriteSessionSettings& settings);
 
     /// Get native topic client
     /// @warning Use with care! Facilities from
