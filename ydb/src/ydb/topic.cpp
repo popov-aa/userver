@@ -2,10 +2,13 @@
 
 #include <userver/engine/async.hpp>
 #include <userver/ydb/impl/cast.hpp>
+#include <userver/ydb/transaction.hpp>
 
 #include <ydb/impl/config.hpp>
 #include <ydb/impl/driver.hpp>
 #include <ydb/impl/future.hpp>
+
+#include <userver/ydb/transaction.hpp>
 
 USERVER_NAMESPACE_BEGIN
 
@@ -26,6 +29,40 @@ bool TopicReadSession::Close(std::chrono::milliseconds timeout) { return read_se
 
 std::shared_ptr<NYdb::NTopic::IReadSession> TopicReadSession::GetNativeTopicReadSession() { return read_session_; }
 
+TopicWriteSession::TopicWriteSession(std::shared_ptr<NYdb::NTopic::IWriteSession> write_session)
+    : write_session_(std::move(write_session)) {
+    UASSERT(write_session_);
+}
+
+std::vector<NYdb::NTopic::TWriteSessionEvent::TEvent>
+TopicWriteSession::GetEvents(std::optional<std::size_t> max_events_count) {
+    impl::GetFutureValue(write_session_->WaitEvent());
+    return write_session_->GetEvents(false, max_events_count);
+}
+
+void TopicWriteSession::Write(NYdb::NTopic::TContinuationToken&& continuationToken, NYdb::NTopic::TWriteMessage&& message,
+                              Transaction* tx) {
+    write_session_->Write(std::move(continuationToken), std::move(message), tx ? &(tx->ydb_tx_) : nullptr);
+}
+
+void TopicWriteSession::Write(NYdb::NTopic::TContinuationToken&& continuationToken, std::string_view data, std::optional<uint64_t> seqNo,
+            std::optional<TInstant> createTimestamp) {
+    write_session_->Write(std::move(continuationToken), std::move(data), seqNo, createTimestamp);
+}
+
+void TopicWriteSession::WriteEncoded(NYdb::NTopic::TContinuationToken&& continuationToken, NYdb::NTopic::TWriteMessage&& params, Transaction* tx) {
+    write_session_->WriteEncoded(std::move(continuationToken), std::move(params), tx ? &(tx->ydb_tx_) : nullptr);
+}
+
+void TopicWriteSession::WriteEncoded(NYdb::NTopic::TContinuationToken&& continuationToken, std::string_view data, NYdb::NTopic::ECodec codec, uint32_t originalSize,
+                    std::optional<uint64_t> seqNo, std::optional<TInstant> createTimestamp) {
+    write_session_->WriteEncoded(std::move(continuationToken), std::move(data), codec, originalSize, seqNo, createTimestamp);
+}
+
+bool TopicWriteSession::Close(std::chrono::milliseconds timeout) { return write_session_->Close(timeout); }
+
+std::shared_ptr<NYdb::NTopic::IWriteSession> TopicWriteSession::GetNativeTopicWriteSession() { return write_session_; }
+
 TopicClient::TopicClient(std::shared_ptr<impl::Driver> driver, [[maybe_unused]] impl::TopicSettings settings)
     : driver_{std::move(driver)}, topic_client_{driver_->GetNativeDriver()} {}
 
@@ -41,6 +78,10 @@ NYdb::NTopic::TDescribeTopicResult TopicClient::DescribeTopic(const std::string&
 
 TopicReadSession TopicClient::CreateReadSession(const NYdb::NTopic::TReadSessionSettings& settings) {
     return TopicReadSession{topic_client_.CreateReadSession(settings)};
+}
+
+TopicWriteSession TopicClient::CreateWriteSession(const NYdb::NTopic::TWriteSessionSettings& settings) {
+    return TopicWriteSession{topic_client_.CreateWriteSession(settings)};
 }
 
 NYdb::NTopic::TTopicClient& TopicClient::GetNativeTopicClient() { return topic_client_; }
