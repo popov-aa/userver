@@ -19,8 +19,8 @@ namespace ydb {
  * Bool          | bool
  * Int8          | N/A
  * Uint8         | N/A
- * Int16         | N/A
- * Uint16        | N/A
+ * Int16         | std::int16_t
+ * Uint16        | std::uint16_t
  * Int32         | std::int32_t
  * Uint32        | std::uint32_t
  * Int64         | std::int64_t
@@ -58,6 +58,8 @@ using JsonDocument = utils::StrongTypedef<JsonDocumentTag, formats::json::Value>
 using InsertColumnValue = std::variant<
     std::string,
     bool,
+    std::int16_t,
+    std::uint16_t,
     std::int32_t,
     std::uint32_t,
     std::int64_t,
