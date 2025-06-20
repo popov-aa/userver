@@ -24,6 +24,12 @@ template <>
 inline constexpr auto kTypeCategory<bool> = NYdb::EPrimitiveType::Bool;
 
 template <>
+inline constexpr auto kTypeCategory<std::int16_t> = NYdb::EPrimitiveType::Int16;
+
+template <>
+inline constexpr auto kTypeCategory<std::uint16_t> = NYdb::EPrimitiveType::Uint16;
+
+template <>
 inline constexpr auto kTypeCategory<std::int32_t> = NYdb::EPrimitiveType::Int32;
 
 template <>
