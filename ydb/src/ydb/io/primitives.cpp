@@ -256,13 +256,13 @@ template struct OptionalPrimitiveTraits<DateTrait>;
 template struct PrimitiveTraits<DateTrait>;
 
 DateTrait::Type DateTrait::Parse(const NYdb::TValueParser& value_parser) {
-    return Date{std::chrono::days(value_parser.GetTimestamp().GetValue())};
+    return Date{std::chrono::days(value_parser.GetDate().Days())};
 }
 
 template <typename Builder>
 void DateTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
     builder.Date(
-        TInstant::Days(std::chrono::duration_cast<std::chrono::microseconds>(value.GetUnderlying().time_since_epoch()).count())
+        TInstant::Days(std::chrono::duration_cast<std::chrono::days>(value.GetUnderlying().time_since_epoch()).count())
     );
 }
 
