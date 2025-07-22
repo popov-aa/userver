@@ -34,29 +34,53 @@ TopicWriteSession::TopicWriteSession(std::shared_ptr<NYdb::NTopic::IWriteSession
     UASSERT(write_session_);
 }
 
-std::vector<NYdb::NTopic::TWriteSessionEvent::TEvent>
-TopicWriteSession::GetEvents(std::optional<std::size_t> max_events_count) {
+std::vector<NYdb::NTopic::TWriteSessionEvent::TEvent> TopicWriteSession::GetEvents(
+    std::optional<std::size_t> max_events_count
+) {
+    LOG_DEBUG("Try to wait event on future");
     impl::GetFutureValue(write_session_->WaitEvent());
+    LOG_DEBUG(
+        "Return events block = false, max_events_count = {}", max_events_count.has_value() ? *max_events_count : 0ul
+    );
     return write_session_->GetEvents(false, max_events_count);
 }
 
-void TopicWriteSession::Write(NYdb::NTopic::TContinuationToken&& continuationToken, NYdb::NTopic::TWriteMessage&& message,
-                              Transaction* tx) {
+void TopicWriteSession::Write(
+    NYdb::NTopic::TContinuationToken&& continuationToken,
+    NYdb::NTopic::TWriteMessage&& message,
+    Transaction* tx
+) {
     write_session_->Write(std::move(continuationToken), std::move(message), tx ? &(tx->ydb_tx_) : nullptr);
 }
 
-void TopicWriteSession::Write(NYdb::NTopic::TContinuationToken&& continuationToken, std::string_view data, std::optional<uint64_t> seqNo,
-            std::optional<TInstant> createTimestamp) {
+void TopicWriteSession::Write(
+    NYdb::NTopic::TContinuationToken&& continuationToken,
+    std::string_view data,
+    std::optional<uint64_t> seqNo,
+    std::optional<TInstant> createTimestamp
+) {
     write_session_->Write(std::move(continuationToken), std::move(data), seqNo, createTimestamp);
 }
 
-void TopicWriteSession::WriteEncoded(NYdb::NTopic::TContinuationToken&& continuationToken, NYdb::NTopic::TWriteMessage&& params, Transaction* tx) {
+void TopicWriteSession::WriteEncoded(
+    NYdb::NTopic::TContinuationToken&& continuationToken,
+    NYdb::NTopic::TWriteMessage&& params,
+    Transaction* tx
+) {
     write_session_->WriteEncoded(std::move(continuationToken), std::move(params), tx ? &(tx->ydb_tx_) : nullptr);
 }
 
-void TopicWriteSession::WriteEncoded(NYdb::NTopic::TContinuationToken&& continuationToken, std::string_view data, NYdb::NTopic::ECodec codec, uint32_t originalSize,
-                    std::optional<uint64_t> seqNo, std::optional<TInstant> createTimestamp) {
-    write_session_->WriteEncoded(std::move(continuationToken), std::move(data), codec, originalSize, seqNo, createTimestamp);
+void TopicWriteSession::WriteEncoded(
+    NYdb::NTopic::TContinuationToken&& continuationToken,
+    std::string_view data,
+    NYdb::NTopic::ECodec codec,
+    uint32_t originalSize,
+    std::optional<uint64_t> seqNo,
+    std::optional<TInstant> createTimestamp
+) {
+    write_session_->WriteEncoded(
+        std::move(continuationToken), std::move(data), codec, originalSize, seqNo, createTimestamp
+    );
 }
 
 bool TopicWriteSession::Close(std::chrono::milliseconds timeout) { return write_session_->Close(timeout); }
