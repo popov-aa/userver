@@ -123,6 +123,13 @@ struct DateTrait {
     static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
 };
 
+struct DateTimeTrait {
+    using Type = DateTime;
+    static Type Parse(const NYdb::TValueParser& value_parser);
+    template <typename Builder>
+    static void Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value);
+};
+
 struct TimestampTrait {
     using Type = Timestamp;
     static Type Parse(const NYdb::TValueParser& value_parser);
@@ -168,6 +175,12 @@ struct ValueTraits<std::optional<DateTrait::Type>> : OptionalPrimitiveTraits<Dat
 
 template <>
 struct ValueTraits<DateTrait::Type> : PrimitiveTraits<DateTrait> {};
+
+template <>
+struct ValueTraits<std::optional<DateTimeTrait::Type>> : OptionalPrimitiveTraits<DateTimeTrait> {};
+
+template <>
+struct ValueTraits<DateTimeTrait::Type> : PrimitiveTraits<DateTimeTrait> {};
 
 template <>
 struct ValueTraits<std::optional<TimestampTrait::Type>> : OptionalPrimitiveTraits<TimestampTrait> {};

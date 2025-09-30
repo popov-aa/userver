@@ -266,6 +266,20 @@ void DateTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& val
     );
 }
 
+template struct OptionalPrimitiveTraits<DateTimeTrait>;
+template struct PrimitiveTraits<DateTimeTrait>;
+
+DateTimeTrait::Type DateTimeTrait::Parse(const NYdb::TValueParser& value_parser) {
+    return DateTime{std::chrono::seconds(value_parser.GetDatetime().GetValue())};
+}
+
+template <typename Builder>
+void DateTimeTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
+    builder.Datetime(
+        TInstant::Seconds(std::chrono::duration_cast<std::chrono::seconds>(value.GetUnderlying().time_since_epoch()).count())
+    );
+}
+
 template struct OptionalPrimitiveTraits<TimestampTrait>;
 template struct PrimitiveTraits<TimestampTrait>;
 

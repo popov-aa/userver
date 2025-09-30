@@ -54,6 +54,9 @@ template <>
 inline constexpr auto kTypeCategory<Date> = NYdb::EPrimitiveType::Date;
 
 template <>
+inline constexpr auto kTypeCategory<DateTime> = NYdb::EPrimitiveType::Datetime;
+
+template <>
 inline constexpr auto kTypeCategory<Timestamp> = NYdb::EPrimitiveType::Timestamp;
 
 template <>
