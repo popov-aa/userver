@@ -4,6 +4,8 @@
 ///
 /// Available primitive types:
 ///  * ValueType::Bool,        bool
+///  * ValueType::Int8,        std::int8_t
+///  * ValueType::Uint8,       std::uint8_t
 ///  * ValueType::Int16,       std::int16_t
 ///  * ValueType::Uint16,      std::uint16_t
 ///  * ValueType::Int32,       std::int32_t
