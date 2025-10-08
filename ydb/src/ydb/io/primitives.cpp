@@ -156,6 +156,26 @@ void BoolTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, Type value) {
     builder.Bool(value);
 }
 
+template struct OptionalPrimitiveTraits<Int8Trait>;
+template struct PrimitiveTraits<Int8Trait>;
+
+Int8Trait::Type Int8Trait::Parse(const NYdb::TValueParser& value_parser) { return value_parser.GetInt8(); }
+
+template <typename Builder>
+void Int8Trait::Write(NYdb::TValueBuilderBase<Builder>& builder, Type value) {
+    builder.Int8(value);
+}
+
+template struct OptionalPrimitiveTraits<Uint8Trait>;
+template struct PrimitiveTraits<Uint8Trait>;
+
+Uint8Trait::Type Uint8Trait::Parse(const NYdb::TValueParser& value_parser) { return value_parser.GetUint8(); }
+
+template <typename Builder>
+void Uint8Trait::Write(NYdb::TValueBuilderBase<Builder>& builder, Type value) {
+    builder.Uint8(value);
+}
+
 template struct OptionalPrimitiveTraits<Int16Trait>;
 template struct PrimitiveTraits<Int16Trait>;
 
@@ -276,7 +296,9 @@ DateTimeTrait::Type DateTimeTrait::Parse(const NYdb::TValueParser& value_parser)
 template <typename Builder>
 void DateTimeTrait::Write(NYdb::TValueBuilderBase<Builder>& builder, const Type& value) {
     builder.Datetime(
-        TInstant::Seconds(std::chrono::duration_cast<std::chrono::seconds>(value.GetUnderlying().time_since_epoch()).count())
+        TInstant::Seconds(
+            std::chrono::duration_cast<std::chrono::seconds>(value.GetUnderlying().time_since_epoch()).count()
+        )
     );
 }
 
