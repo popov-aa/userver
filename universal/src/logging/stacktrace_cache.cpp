@@ -43,7 +43,7 @@ const std::string& ToStringCachedFiltered(boost::stacktrace::frame frame) {
         auto name = boost::stacktrace::to_string(frame);
         UASSERT(!name.empty());
         if (name.find(kStartOfCoroutine) != std::string::npos) {
-            name = {};
+            name.clear();
         }
         ptr = frame_name_cache->Emplace(frame, std::move(name));
     }
