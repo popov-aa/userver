@@ -290,7 +290,7 @@ template struct OptionalPrimitiveTraits<DateTimeTrait>;
 template struct PrimitiveTraits<DateTimeTrait>;
 
 DateTimeTrait::Type DateTimeTrait::Parse(const NYdb::TValueParser& value_parser) {
-    return DateTime{std::chrono::seconds(value_parser.GetDatetime().GetValue())};
+    return DateTime{std::chrono::seconds(value_parser.GetDatetime().Seconds())};
 }
 
 template <typename Builder>
