@@ -9,6 +9,9 @@ class YdbClient:
         self._database = database
         self._session = self._driver.table_client.session().create()
 
+    def __del__(self):
+        self._driver.stop()
+
     def execute(self, query):
         return self._session.transaction().execute(query, commit_tx=True)
 
