@@ -43,9 +43,9 @@ cpmaddpackage(
     NAME
     ydb-cpp-sdk
     GIT_TAG
-    v3.8.2-fixed
+    v3.16.0
     GITHUB_REPOSITORY
-    popov-aa/ydb-cpp-sdk
+    ydb-platform/ydb-cpp-sdk
     OPTIONS
     "Brotli_VERSION ${Brotli_VERSION}"
     "RAPIDJSON_INCLUDE_DIRS ${RAPIDJSON_INCLUDE_DIRS}"
